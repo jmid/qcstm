@@ -80,22 +80,16 @@ struct
     | Mem _
     | Length        -> s
 
-  (* find : ('a * 'b) list -> 'a -> 'b option *)
-  let rec find h k = match h with
-    | [] -> None
-    | (k',v')::h' ->
-      if k = k' (*&& k<>68*) (* an arbitrary, injected bug *)
-      then Some v'
-      else find h' k
-  
   let run_cmd c s h = match c with
     | Clear         -> Hashtbl.clear h; true
     | Add (k,v)     -> Hashtbl.add h k v; true
     | Remove k      -> Hashtbl.remove h k; true
     | Find k        ->
-      find s k = (try Some (Hashtbl.find h k)
-                  with Not_found -> None)
-    | Find_opt k    -> find s k = Hashtbl.find_opt h k
+      List.assoc_opt k s
+        = (try Some (Hashtbl.find h k)
+           with Not_found -> None)
+    | Find_opt k    ->
+      List.assoc_opt k s = Hashtbl.find_opt h k
     | Find_all k    ->
       let rec find_all h = match h with
         | [] -> []
