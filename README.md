@@ -6,7 +6,7 @@ property-based testing of imperative code. The library requires a
 recent installation of both OCaml and the [QCheck](https://github.com/c-cube/qcheck) framework.
 
 State-machine frameworks for other languages include:
- - Quviq QuickCheck for Erlang
+ - [Quviq QuickCheck](http://www.quviq.com/downloads/) for Erlang
  - [Proper](https://proper-testing.github.io/) for Erlang  
  - [Triq](http://krestenkrab.github.io/triq/) for Erlang  
  - [ScalaCheck](https://www.scalacheck.org/) for Scala  
