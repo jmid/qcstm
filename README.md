@@ -1,5 +1,5 @@
 QCSTM: A Simple State-Machine Framework for OCaml Based on QCheck 
------------------------------------------------------------------
+=================================================================
 
 This library implements a simple, typed state machine framework for
 property-based testing of imperative code. The library requires a
@@ -41,6 +41,9 @@ In addition the user has to provide:
 In return, the framework provides a generator of `cmd` lists (incl. a shrinker)
 as well as an agreement test between the model and system under test.
 
+
+An example
+----------
 
 Consider the following example (available in examples/counter.ml) that
 tests an `int ref` against a model consisting of a single `int`:
