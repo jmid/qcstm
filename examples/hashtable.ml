@@ -43,8 +43,13 @@ struct
     | Mem k      -> Iter.map (fun k' -> Mem k') (Shrink.int k)
     | Length     -> Iter.empty
 
-  let arb_cmd s = (* FIXME: generate some from state param? *)
-    QCheck.make ~print:show_cmd ~shrink:cmdshrink (command Gen.small_int Gen.small_string)
+  let arb_cmd s =
+    let int_gen =
+      if s=[]
+      then Gen.small_int
+      else Gen.oneof [Gen.oneofl (List.map fst s);
+                      Gen.small_int] in
+    QCheck.make ~print:show_cmd ~shrink:cmdshrink (command int_gen Gen.small_string)
 
   let init_state  = []
   let init_sut () = Hashtbl.create ~random:false 42
