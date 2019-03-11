@@ -1,0 +1,6 @@
+#directory "_build/src";;
+#use "topfind";;
+#require "qcheck";;
+#require "ctypes";;
+#require "ctypes.foreign";;
+open QCheck;;

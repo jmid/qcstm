@@ -1,0 +1,8 @@
+# source code paths
+S src examples
+
+# build path
+B _build/src
+
+# package path
+PKG ctypes ctypes.foreign qcheck ppx_deriving.show
