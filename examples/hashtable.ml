@@ -58,14 +58,7 @@ struct
   let next_state c s = match c with
     | Clear         -> []
     | Add (k,v)     -> (k,v)::s
-    | Remove k      ->
-      let rec rem h = match h with
-        | [] -> []
-        | (k',v')::h' ->
-          if k = k' (*&& k<>43*) (* an arbitrary, injected bug *)
-          then h'
-          else (k',v')::(rem h') in
-      rem s
+    | Remove k  -> List.remove_assoc k s
     | Replace (k,v) ->
       let rec replace h = match h with
         | [] -> [(k,v)]
