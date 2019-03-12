@@ -2,54 +2,54 @@ open QCheck
 
 module HConf =
 struct
-  type state = (int * string) list
-  type sut   = (int, string) Hashtbl.t
+  type state = (string * int) list
+  type sut   = (string, int) Hashtbl.t
   type cmd =
     | Clear
-    | Add of int * string
-    | Remove of int
-    | Find of int
-    | Find_opt of int
-    | Find_all of int
-    | Replace of int * string
-    | Mem of int
+    | Add of string * int
+    | Remove of string
+    | Find of string
+    | Find_opt of string
+    | Find_all of string
+    | Replace of string * int
+    | Mem of string
     | Length [@@deriving show { with_path = false }]
 
-  (*  command : int Gen.t -> string Gen.t -> command Gen.t  *)
-  let command intgen strgen =
+  (*  gen_cmd : string Gen.t -> int Gen.t -> command Gen.t  *)
+  let gen_cmd strgen intgen =
     Gen.oneof
       [ Gen.return Clear;
-        Gen.map2 (fun k v -> Add (k,v)) intgen strgen;
-        Gen.map  (fun k   -> Remove k) intgen;
-        Gen.map  (fun k   -> Find k) intgen;
-        Gen.map  (fun k   -> Find_opt k) intgen;
-        Gen.map  (fun k   -> Find_all k) intgen;
-        Gen.map2 (fun k v -> Replace (k,v)) intgen strgen;
-        Gen.map  (fun k   -> Mem k) intgen;
+        Gen.map2 (fun k v -> Add (k,v)) strgen intgen;
+        Gen.map  (fun k   -> Remove k) strgen;
+        Gen.map  (fun k   -> Find k) strgen;
+        Gen.map  (fun k   -> Find_opt k) strgen;
+        Gen.map  (fun k   -> Find_all k) strgen;
+        Gen.map2 (fun k v -> Replace (k,v)) strgen intgen;
+        Gen.map  (fun k   -> Mem k) strgen;
         Gen.return Length; ]
 
-  let cmdshrink c = let open Iter in match c with
+  let shrink c = let open Iter in match c with
     | Clear      -> Iter.empty
     | Add (k,v)  ->
-      (Iter.map (fun k' -> Add (k',v)) (Shrink.int k)) <+>
-      (Iter.map (fun v' -> Add (k,v')) (Shrink.string v))
-    | Remove k   -> Iter.map (fun k' -> Remove k') (Shrink.int k)
-    | Find k     -> Iter.map (fun k' -> Find k') (Shrink.int k)
-    | Find_opt k -> Iter.map (fun k' -> Find_opt k') (Shrink.int k)
-    | Find_all k -> Iter.map (fun k' -> Find_all k') (Shrink.int k)
+      (Iter.map (fun k' -> Add (k',v)) (Shrink.string k)) <+>
+      (Iter.map (fun v' -> Add (k,v')) (Shrink.int v))
+    | Remove k   -> Iter.map (fun k' -> Remove k') (Shrink.string k)
+    | Find k     -> Iter.map (fun k' -> Find k') (Shrink.string k)
+    | Find_opt k -> Iter.map (fun k' -> Find_opt k') (Shrink.string k)
+    | Find_all k -> Iter.map (fun k' -> Find_all k') (Shrink.string k)
     | Replace (k,v)  ->
-      (Iter.map (fun k' -> Replace (k',v)) (Shrink.int k)) <+>
-      (Iter.map (fun v' -> Replace (k,v')) (Shrink.string v))
-    | Mem k      -> Iter.map (fun k' -> Mem k') (Shrink.int k)
+      (Iter.map (fun k' -> Replace (k',v)) (Shrink.string k)) <+>
+      (Iter.map (fun v' -> Replace (k,v')) (Shrink.int v))
+    | Mem k      -> Iter.map (fun k' -> Mem k') (Shrink.string k)
     | Length     -> Iter.empty
 
   let arb_cmd s =
-    let int_gen =
+    let str_gen =
       if s=[]
-      then Gen.small_int
+      then (Gen.small_string : string Gen.t)
       else Gen.oneof [Gen.oneofl (List.map fst s);
-                      Gen.small_int] in
-    QCheck.make ~print:show_cmd ~shrink:cmdshrink (command int_gen Gen.small_string)
+                      Gen.small_string] in
+    QCheck.make ~print:show_cmd ~shrink:shrink (gen_cmd str_gen Gen.small_int)
 
   let init_state  = []
   let init_sut () = Hashtbl.create ~random:false 42
