@@ -12,7 +12,6 @@ struct
     | EmptySmall
     | SmallIntoBig
     | BigIntoSmall [@@deriving show { with_path = false }]
-
   type state = { big : int; small : int }
   type sut = unit
       
@@ -21,9 +20,6 @@ struct
       (Gen.oneofl [FillBig; FillSmall; EmptyBig; EmptySmall; SmallIntoBig; BigIntoSmall])
 
   let init_state = { big = 0; small = 0}
-  let init_sut _ = ()
-  let cleanup _  = ()
-
   let next_state c s = match c with
     | FillBig      -> { s with big = 5 }
     | FillSmall    -> { s with small = 3 }
@@ -38,7 +34,10 @@ struct
       { big = s.big - (small' - s.small);
         small = small' }
 
+  let init_sut _ = ()
+  let cleanup _  = ()
   let run_cmd c s q = (next_state c s).big <> 4 (* s.big <> 4 *)
+
   let precond c s = true
 end
 
