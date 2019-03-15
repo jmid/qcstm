@@ -51,6 +51,7 @@ struct
   type state = { status : strstatus; contents : char list; pos : int }
   and strstatus = Open | Closed | Writing | Reading
   type sut = stream option ref
+
   let arb_cmd s =
     let int_gen = Gen.oneof [(*Gen.map Int32.to_int int32.gen;*) Gen.small_nat] in
     let shrink c = match c with
@@ -78,10 +79,7 @@ struct
            [Gen.map (fun i -> Fseek i) int_gen;
 	    Gen.map (fun cs -> Fwrite cs) (Gen.list Gen.char);
             Gen.return Fclose; ]))
-  let init_sut () = ref None
-  let cleanup sut = match !sut with
-    | None -> ()
-    | Some str -> ignore (fclose str)
+
   let init_state = { status = Closed; contents = []; pos = 0 }
   let next_state c s = match c with
     | Fopen (fn,fl) -> { init_state with status = Open } (* "wb+" truncates to 0 length *)
@@ -106,6 +104,11 @@ struct
            contents = pre @ cs @ post;
            pos      = s.pos + cs_len })
     | Fclose        -> { s with status = Closed }
+
+  let init_sut () = ref None
+  let cleanup sut = match !sut with
+    | None -> ()
+    | Some str -> ignore (fclose str)
   let run_cmd c s sut = match c with
     | Fopen (fn,fl) -> let s = fopen fn fl in
       ((*Printf.printf "fopen returns %i\n%!" (Obj.obj (Obj.repr s));*)
@@ -137,6 +140,7 @@ struct
        | Some str -> let i = fclose str in
 	 sut := None; i=0
        | None -> raise (Failure "no stream to close"))
+
   let precond c s = match c with
     | Fopen (_,_) -> s.status=Closed (* avoid reopen *)
     | Fread _  -> s.status<>Closed && s.status<>Writing
