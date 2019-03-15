@@ -3,58 +3,61 @@ open QCheck
 module QConf =
 struct
   type cmd =
-    | Pop         (* may throw exception        *)
-    | Top         (* int Queue.t -> int option  *)
-    | Push of int (* int -> int Queue.t -> unit *)
-    | Clear       (* int Queue.t -> unit        *)
-    | Is_empty    (* int Queue.t -> bool        *)
-      [@@deriving show { with_path = false }]
+    | Pop         (* may throw exception *)
+    | Top         (* may throw exception *)
+    | Push of int
+    | Clear
+    | Is_empty [@@deriving show { with_path = false }]
   type state = int list
   type sut = int Queue.t
-      
-  let arb_cmd s =
+
+  let gen_cmd s =
     let int_gen = Gen.oneof [Gen.int; Gen.small_int] in
+    if s = []
+    then Gen.oneof  (* don't generate pop/tops from empty *)
+           [Gen.map (fun i -> Push i) int_gen;
+            Gen.return Clear;
+            Gen.return Is_empty]
+    else Gen.oneof (* weight the below for fewer pushes? *)
+           [Gen.return Pop;
+            Gen.return Top;
+            Gen.map (fun i -> Push i) int_gen;
+            Gen.return Clear;
+            Gen.return Is_empty]
+
+  let arb_cmd s =
     let shrink c = match c with
       | Push i   -> Iter.map (fun i' -> Push i') (Shrink.int i)
       | Pop
       | Top
       | Clear
-      | Is_empty -> Iter.empty
-    in
-    QCheck.make ~print:show_cmd ~shrink:shrink (* weight the below for fewer pushes? *)
-      (Gen.oneof [Gen.map (fun i -> Push i) int_gen;
-		  if s=[]
-		  then Gen.oneofl [Top;Clear;Is_empty] (* don't generate pops from empty *)
-		  else Gen.oneofl [Top;Pop;Clear;Is_empty]])
+      | Is_empty -> Iter.empty in
+    QCheck.make ~print:show_cmd ~shrink:shrink (gen_cmd s)
 
   let init_state = []
-  let init_sut   = Queue.create
-  let cleanup _  = ()
-
   let next_state c s = match c with
     | Pop      -> (match s with
  	            | []    -> failwith "tried to pop empty queue"
 		    | _::s' -> s')
-    | Push i   -> if i<>135 then s@[i] else s  (* an artificial fault in the model *)
+    | Push i   -> (* s@[i] *)
+       if i<>135 then s@[i] else s  (* an artificial fault in the model *)
     | Clear    -> []
     | Top      -> s
     | Is_empty -> s
 
+  
+  let init_sut   = Queue.create
+  let cleanup _  = ()
   let run_cmd c s q = match c with
-    | Pop ->
-      (assume (s <> []); try (List.hd s = Queue.pop q) with _ -> false)
-    | Top ->
-      let o = (try Some (Queue.top q)
-               with Queue.Empty -> None) in
-      (match s with
-	| []   -> o = None
-	| n::_ -> o = Some n)
+    | Pop      -> (try (Queue.pop q = List.hd s) with _ -> false)
+    | Top      -> (try (Queue.top q = List.hd s) with _ -> false)
     | Push n   -> (Queue.push n q; true)
     | Clear    -> (Queue.clear q; true)
     | Is_empty -> (Queue.is_empty q) = (s = [])
 
   let precond c s = match c with
     | Pop -> s<>[]
+    | Top -> s<>[]
     | _   -> true
 end
 
