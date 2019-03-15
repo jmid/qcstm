@@ -2,6 +2,8 @@ open QCheck
 
 module BConf =
 struct
+  type state = char list (* in reverse *)
+  type sut = Buffer.t
   type cmd =
     | Contents
     (* To_bytes | Sub | Blit *)
@@ -16,9 +18,6 @@ struct
     | Truncate of int
   [@@deriving show { with_path = false }]
 
-  type state = char list (* in reverse *)
-  type sut = Buffer.t
-      
   let arb_cmd s =
     QCheck.make ~print:show_cmd
       (Gen.oneof [Gen.return Contents;
@@ -35,8 +34,6 @@ struct
                  ])
   
   let init_state  = []
-  let init_sut () = Buffer.create 16
-  let cleanup b   = Buffer.reset b
 
   let rev_explode s =
     let chars = ref [] in
@@ -61,6 +58,8 @@ struct
         | c::cs,_ -> c::trunc cs (n-1) in
       List.rev (trunc (List.rev s) i)
   
+  let init_sut () = Buffer.create 16
+  let cleanup b   = Buffer.reset b
   let run_cmd c s b = match c with
     | Contents -> explode (Buffer.contents b) = List.rev s
     | Nth i ->
@@ -69,9 +68,9 @@ struct
       let r' = try Some (List.nth (List.rev s) i)
                with Failure _ -> None in
       r = r'
-    | Length -> (Buffer.length b) = List.length s
-    | Clear -> Buffer.clear b; true
-    | Reset -> Buffer.reset b; true
+    | Length -> Buffer.length b = List.length s
+    | Clear  -> Buffer.clear b; true
+    | Reset  -> Buffer.reset b; true
     | Add_char ch -> Buffer.add_char b ch; true
     | Add_string str -> Buffer.add_string b str; true
     | Truncate i ->
