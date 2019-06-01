@@ -17,8 +17,8 @@ dev-repo: "git+https://github.com/jmid/qcstm.git"
 depends: [
   "ocaml" {>= "4.04.0"}
   "qcheck" {>= "0.6"}
-  "ocamlfind" {dev}
-  "ocamlbuild" {build}
+  "ocamlfind"
+  "ocamlbuild"
 ]
 
 build: [
