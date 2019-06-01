@@ -3,7 +3,7 @@ all:
 	ocamlbuild -use-ocamlfind -package qcheck src/qCSTM.cmxa
 
 install: all
-	ocamlfind install qcstm META _build/src/qCSTM.cma _build/src/qCSTM.cmxa
+	ocamlfind install qcstm META _build/src/qCSTM.cmi _build/src/qCSTM.cma _build/src/qCSTM.cmxa
 
 uninstall:
 	ocamlfind remove qcstm
