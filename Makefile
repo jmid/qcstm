@@ -1,5 +1,12 @@
 all:
 	ocamlbuild -use-ocamlfind -package qcheck src/qCSTM.cma
+	ocamlbuild -use-ocamlfind -package qcheck src/qCSTM.cmxa
+
+install: all
+	ocamlfind install qcstm META _build/src/qCSTM.cma _build/src/qCSTM.cmxa
+
+uninstall:
+	ocamlfind remove qcstm
 
 doc:
 	ocamlbuild -use-ocamlfind -package qcheck -docflags -d,doc src/qCSTM.docdir/index.html
