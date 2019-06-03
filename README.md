@@ -48,7 +48,7 @@ An example
 Consider the following example (available in examples/counter.ml) that
 tests an `int ref` against a model consisting of a single `int`:
 
-```
+```ocaml
   open QCheck
   
   module CConf =
