@@ -2,8 +2,11 @@ QCSTM: A Simple State-Machine Framework for OCaml Based on QCheck
 =================================================================
 
 This library implements a simple, typed state machine framework for
-property-based testing of imperative code. The library requires a
-recent installation of both OCaml and the [QCheck](https://github.com/c-cube/qcheck) framework.
+property-based testing of imperative code. Tests are described by (a
+generator of) symbolic commands and two command interpreters over an
+abstract model and the system under test.
+
+The library requires a recent installation of both OCaml and the [QCheck](https://github.com/c-cube/qcheck) framework.
 
 State-machine frameworks for other languages include:
  - [Quviq QuickCheck](http://www.quviq.com/downloads/) for Erlang
@@ -40,6 +43,23 @@ In addition the user has to provide:
 
 In return, the framework provides a generator of `cmd` lists (incl. a shrinker)
 as well as an agreement test between the model and system under test.
+
+
+Installation
+------------
+
+With `opam` this should be as simple as `opam install qcstm`.
+
+You can also install from source assuming you have `ocamlbuild`,
+`ocamlfind` and a not-too-ancient `qcheck` installed, by issuing:
+```
+  make
+  make install
+```
+
+To uninstall with `opam` just run `opam remove qcstm`.
+To uninstall from a source installation run `make uninstall`
+from the souce directory.
 
 
 An example
