@@ -36,7 +36,7 @@ putget: putgetstub.so
 
 putgetstub.so: examples/putgetstub.c
 	if [[ ! -d _build ]]; then mkdir _build; fi
-	if [[ ! -d _build/src ]]; then mkdir _build/examples; fi
+	if [[ ! -d _build/examples ]]; then mkdir _build/examples; fi
 	gcc -shared -o _build/examples/putgetstub.so -fPIC examples/putgetstub.c
 
 stdio: stdiostub.o
