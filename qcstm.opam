@@ -27,10 +27,11 @@ url {
   checksum: "md5=e802a61964397ba73277d0da583a5269"
 }
 depends: [
-  "ocaml" {>= "4.04.0"}
+  "ocaml"  {>= "4.04.0"}
   "qcheck" {>= "0.6"}
-  "ocamlfind" {build}
+  "ocamlfind"  {build}
   "ocamlbuild" {build}
+  "ppx_deriving" {with-test}
 ]
 
 build: [
