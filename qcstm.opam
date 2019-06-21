@@ -35,6 +35,7 @@ depends: [
 
 build: [
     [make "all"]
+    [make "examples"] {with-test}
 ]
 
 install: [make "install"]
