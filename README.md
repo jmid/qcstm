@@ -132,7 +132,7 @@ or may not catch the model's bug in a given run:
 
 ```
   $ make counter
-  ocamlbuild -use-ocamlfind -package qcheck,qcstm,ppx_deriving.show examples/counter.cma examples/counter.native
+  ocamlbuild -use-ocamlfind -package qcheck,qCSTM,ppx_deriving.show examples/counter.cma examples/counter.native
   Finished, 8 targets (3 cached) in 00:00:00.
   $ ./counter.native 
   random seed: 272260055
