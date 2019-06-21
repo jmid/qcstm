@@ -1,5 +1,5 @@
 version = "0.1"
 description = "A simple state-machine framework for OCaml based on QCheck"
 requires = ""
-archive(byte) = "qcstm.cma"
-archive(native) = "qcstm.cmxa"
+archive(byte) = "qCSTM.cma"
+archive(native) = "qCSTM.cmxa"
