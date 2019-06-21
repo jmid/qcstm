@@ -34,8 +34,10 @@ depends: [
 ]
 
 build: [
-    [make "all"]
-    [make "examples"] {with-test}
+  [make "all"]
 ]
 
-install: [make "install"]
+install: [
+  [make "install"]
+  [make "examples"] {with-test}
+]
