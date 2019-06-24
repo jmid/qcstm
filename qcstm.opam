@@ -23,8 +23,8 @@ authors: [ "Jan Midtgaard" ]
 maintainer: [ "Jan Midtgaard <mail@janmidtgaard.dk>" ]
 dev-repo: "git+https://github.com/jmid/qcstm.git"
 url {
-  src: "https://github.com/jmid/qcstm/archive/0.1.tar.gz"
-  checksum: "md5=e802a61964397ba73277d0da583a5269"
+  src: "https://github.com/jmid/qcstm/archive/0.1.1.tar.gz"
+  checksum: "md5=aea97b691038c9c93d1378ba4d5ad7ad"
 }
 depends: [
   "ocaml"  {>= "4.04.0"}
