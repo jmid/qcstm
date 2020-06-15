@@ -31,6 +31,9 @@ hashtable:
 buf:
 	ocamlbuild -use-ocamlfind -package qcheck,qcstm,ppx_deriving.show examples/buf.cma examples/buf.native
 
+hanoi:
+	ocamlbuild -use-ocamlfind -package qcheck,qcstm,ppx_deriving.show examples/hanoi.cma examples/hanoi.native
+
 putget: putgetstub.so
 	ocamlbuild -use-ocamlfind -package ctypes,ctypes.foreign,qcheck,qcstm,ppx_deriving.show examples/putget.native
 
