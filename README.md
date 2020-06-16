@@ -157,4 +157,22 @@ or may not catch the model's bug in a given run:
 ```
 
 
-A number of additional examples are provided in the `examples` directory.
+A number of additional examples are provided in the [examples](examples/)
+directory, including examples of testing OCaml code:
+
+- [examples/buf.ml](examples/buf.ml): tests the standard library `Buffer` module
+- [examples/counter.ml](examples/counter.ml): the above `int ref` example
+- [examples/hashtable.ml](examples/hashtable.ml)): tests the standard library `Hashtbl` module
+- [examples/q.ml](examples/q.ml): tests the standard library `Queue` module
+- [examples/stk.ml](examples/stk.ml): tests the standard library `Stack` module
+
+There are also examples of testing C code:
+
+- [examples/putget.ml](examples/putget.ml): tests two C functions, from [Hughes: Certifying your car with Erlang](https://vimeo.com/68331689)
+- [examples/cq.ml](examples/cq.ml): tests a circular buffer in C, from [Hughes: Testing the Hard Stuff and Staying Sane](https://www.youtube.com/watch?v=zi0rHwfiX1Q)
+- [examples/stdio.ml](examples/stdio.ml): tests a few stdio library operations in C, also from [Hughes: Certifying your car with Erlang](https://vimeo.com/68331689)
+
+Finally there are a few puzzle examples where the command generator is (mis)used to search for a solution:
+
+- [examples/hanoi.ml](examples/hanoi.ml): Towers of Hanoi example inspired by [this Hypothesis issue](https://github.com/HypothesisWorks/hypothesis/issues/1857)
+- [examples/waterjug.ml](examples/waterjug.ml): Die Hard water jug puzzle adapted from [this post](https://hypothesis.works/articles/how-not-to-die-hard-with-hypothesis/) and [this post](http://clrnd.com.ar/posts/2017-04-21-the-water-jug-problem-in-hedgehog.html)
