@@ -162,7 +162,7 @@ directory, including examples of testing OCaml code:
 
 - [examples/buf.ml](examples/buf.ml): tests the standard library `Buffer` module
 - [examples/counter.ml](examples/counter.ml): the above `int ref` example
-- [examples/hashtable.ml](examples/hashtable.ml)): tests the standard library `Hashtbl` module
+- [examples/hashtable.ml](examples/hashtable.ml): tests the standard library `Hashtbl` module
 - [examples/q.ml](examples/q.ml): tests the standard library `Queue` module
 - [examples/stk.ml](examples/stk.ml): tests the standard library `Stack` module
 
