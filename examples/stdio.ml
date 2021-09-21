@@ -26,7 +26,7 @@ let rec split_list n es = match n,es with
   | _, []    -> raise (Failure "split_list: split point beyond length")
   | _, e::es -> let fst,snd = split_list (n-1) es in
 		e::fst,snd
-  
+
 (*  a simpler fread version, accepting only a number  *)
 let fread' n str =
   let buf = CArray.make char n in
@@ -36,7 +36,7 @@ let fread' n str =
 
 (*  a simpler fwrite version, accepting only a list  *)
 let fwrite' lst str =
-  let arr = CArray.of_list char lst in 
+  let arr = CArray.of_list char lst in
   let len = Unsigned.Size_t.of_int (List.length lst) in
   fwrite (to_voidp (CArray.start arr)) (Unsigned.Size_t.of_int 1) len str
 
@@ -55,7 +55,7 @@ struct
   let arb_cmd s =
     let int_gen = Gen.oneof [(*Gen.map Int32.to_int int32.gen;*) Gen.small_nat] in
     let shrink c = match c with
-      | Fopen (fn,flags) -> Iter.empty
+      | Fopen (_fn,_flags) -> Iter.empty
       | Fread i -> Iter.map (fun i' -> Fread i') (Shrink.int i)
       | Fseek i -> Iter.map (fun i' -> Fseek i') (Shrink.int i)
       | Fwrite cs -> Iter.map (fun cs' -> Fwrite cs') (Shrink.list cs)
@@ -82,14 +82,14 @@ struct
 
   let init_state = { status = Closed; contents = []; pos = 0 }
   let next_state c s = match c with
-    | Fopen (fn,fl) -> { init_state with status = Open } (* "wb+" truncates to 0 length *)
+    | Fopen (_fn,_fl) -> { init_state with status = Open } (* "wb+" truncates to 0 length *)
     | Fread i       ->
       let read = min i (max 0 (List.length s.contents - s.pos)) in
       { s with pos = s.pos + read; status = Reading} (* advance reading position *)
     | Fseek i       -> { s with pos = i; status = Open }
     | Fwrite cs     ->
       (match cs with
-       | [] -> s (* If size or nitems is 0, 
+       | [] -> s (* If size or nitems is 0,
 		    fwrite() shall return 0 and the state of the stream remains unchanged *)
        | _  ->
 	 let cs_len = List.length cs in
@@ -148,7 +148,8 @@ struct
     | Fwrite _ -> s.status<>Closed && s.status<>Reading
     | Fclose   -> s.status<>Closed
 end
-module StdioT = QCSTM.Make(StdioConf)
-;;
-QCheck_runner.run_tests ~verbose:true
-  [StdioT.agree_test ~count:200 ~name:"stdio-model agreement"]
+
+let _ =
+  let module StdioT = QCSTM.Make(StdioConf) in
+  exit @@ QCheck_runner.run_tests ~verbose:true
+    [StdioT.agree_test ~count:200 ~name:"stdio-model agreement"]

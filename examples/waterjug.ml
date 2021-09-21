@@ -14,8 +14,8 @@ struct
     | BigIntoSmall [@@deriving show { with_path = false }]
   type state = { big : int; small : int }
   type sut = unit
-      
-  let arb_cmd s =
+
+  let arb_cmd _s =
     QCheck.make ~print:show_cmd
       (Gen.oneofl [FillBig; FillSmall; EmptyBig; EmptySmall; SmallIntoBig; BigIntoSmall])
 
@@ -36,11 +36,11 @@ struct
 
   let init_sut _ = ()
   let cleanup _  = ()
-  let run_cmd c s q = (next_state c s).big <> 4 (* s.big <> 4 *)
+  let run_cmd c s _q = (next_state c s).big <> 4 (* s.big <> 4 *)
 
-  let precond c s = true
+  let precond _c _s = true
 end
 
-module WJT = QCSTM.Make(WJConf)
-;;
-QCheck_runner.run_tests ~verbose:true [WJT.agree_test ~count:10_000 ~name:"waterjug-model"]
+let _ =
+  let module WJT = QCSTM.Make(WJConf) in
+  exit @@ QCheck_runner.run_tests ~verbose:true [WJT.agree_test ~count:10_000 ~name:"waterjug-model"]

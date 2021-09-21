@@ -74,16 +74,15 @@ struct
   	  (Spec.arb_cmd s).gen >>= fun c ->
 	   (gen_cmds (Spec.next_state c s) (fuel-1)) >>= fun cs ->
              return (c::cs))
-  (** A fueled command list generator.
-      Accepts a state parameter to enable state-dependent [cmd] generation. *)
-
+  (* A fueled command list generator.
+     Accepts a state parameter to enable state-dependent [cmd] generation. *)
   let rec cmds_ok s cs = match cs with
     | [] -> true
     | c::cs ->
       Spec.precond c s &&
 	let s' = Spec.next_state c s in
 	cmds_ok s' cs
-  (** A precondition checker (stops early, thanks to short-circuit Boolean evaluation).
+  (* A precondition checker (stops early, thanks to short-circuit Boolean evaluation).
       Accepts the initial state and the command sequence as parameters.  *)
 
   let arb_cmds s =
@@ -95,11 +94,11 @@ struct
     (match (Spec.arb_cmd s).print with
      | None   -> ac
      | Some p -> set_print (Print.list p) ac)
-  (** A generator of command sequences. Accepts the initial state as parameter. *)
+  (* A generator of command sequences. Accepts the initial state as parameter. *)
 
   let consistency_test ?(count=1000) ~name =
     Test.make ~name:name ~count:count (arb_cmds Spec.init_state) (cmds_ok Spec.init_state)
-  (** A consistency test that generates a number of [cmd] sequences and
+  (* A consistency test that generates a number of [cmd] sequences and
       checks that all contained [cmd]s satisfy the precondition [precond].
       Accepts an optional [count] parameter and a test name as a labeled parameter [name]. *)
 
@@ -109,7 +108,7 @@ struct
       let b = Spec.run_cmd c s sut in
       let s' = Spec.next_state c s in
       b && interp_agree s' sut cs
-  (** Checks agreement between the model and the system under test
+  (* Checks agreement between the model and the system under test
       (stops early, thanks to short-circuit Boolean evaluation). *)
 
   let agree_prop =
@@ -119,12 +118,12 @@ struct
        let res = interp_agree Spec.init_state sut cs in
        let ()  = Spec.cleanup sut in
        res)
-  (** The agreement property: the command sequence [cs] yields the same observations
+  (* The agreement property: the command sequence [cs] yields the same observations
       when interpreted from the model's initial state and the [sut]'s initial state.
       Cleans up after itself by calling [Spec.cleanup] *)
 
   let agree_test ?(count=1000) ~name =
     Test.make ~name:name ~count:count (arb_cmds Spec.init_state) agree_prop
-  (** An actual agreement test (for convenience). Accepts an optional count parameter
+  (* An actual agreement test (for convenience). Accepts an optional count parameter
       and a test name as a labeled parameter [name]. *)
  end

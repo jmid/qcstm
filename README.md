@@ -1,7 +1,7 @@
-QCSTM: A Simple State-Machine Framework for OCaml Based on QCheck 
+QCSTM: A Simple State-Machine Framework for OCaml Based on QCheck
 =================================================================
 
-[![Build Status](https://api.travis-ci.com/jmid/qcstm.svg?branch=master)](https://app.travis-ci.com/github/jmid/qcstm)
+[![Build Status](https://github.com/jmid/qcstm/actions/workflows/ci.yaml/badge.svg)](https://github.com/jmid/qcstm/actions/workflows/ci.yaml)
 
 This library implements a simple, typed state machine framework for
 property-based testing of imperative code. Tests are described by (a
@@ -12,14 +12,14 @@ The library requires a recent installation of both OCaml and the [QCheck](https:
 
 State-machine frameworks for other languages include:
  - [Quviq QuickCheck](http://www.quviq.com/downloads/) for Erlang
- - [Proper](https://proper-testing.github.io/) for Erlang  
- - [Triq](http://krestenkrab.github.io/triq/) for Erlang  
- - [ScalaCheck](https://www.scalacheck.org/) for Scala  
- - [Hedgehog](https://github.com/hedgehogqa) for Haskell and R  
+ - [Proper](https://proper-testing.github.io/) for Erlang
+ - [Triq](http://krestenkrab.github.io/triq/) for Erlang
+ - [ScalaCheck](https://www.scalacheck.org/) for Scala
+ - [Hedgehog](https://github.com/hedgehogqa) for Haskell and R
  - [quickcheck-state-machine](https://github.com/advancedtelematic/quickcheck-state-machine) for Haskell
- - [fast-check](https://github.com/dubzzz/fast-check) for JavaScript/TypeScript  
- - [Lua-QuickCheck](https://github.com/luc-tielen/lua-quickcheck) for Lua  
- - [RapidCheck](https://github.com/emil-e/rapidcheck) for C++  
+ - [fast-check](https://github.com/dubzzz/fast-check) for JavaScript/TypeScript
+ - [Lua-QuickCheck](https://github.com/luc-tielen/lua-quickcheck) for Lua
+ - [RapidCheck](https://github.com/emil-e/rapidcheck) for C++
  - ...
 
 QCSTM takes inspiration from the commercial Erlang state machine
@@ -52,17 +52,16 @@ Installation
 
 With `opam` this should be as simple as `opam install qcstm`.
 
-You can also install from source assuming you have `ocamlbuild`,
-`ocamlfind` and a not-too-ancient `qcheck` installed, by issuing:
-```
-  make
-  make install
-```
-
 To uninstall with `opam` just run `opam remove qcstm`.
-To uninstall from a source installation run `make uninstall`
-from the souce directory.
 
+You can also build it manually from source with:
+
+``` ocaml
+$ git clone https://github.com/jmid/qcstm.git
+$ cd qcstm
+$ opam install . --deps-only -ty
+$ make
+```
 
 An example
 ----------
@@ -72,7 +71,7 @@ tests an `int ref` against a model consisting of a single `int`:
 
 ```ocaml
   open QCheck
-  
+
   module CConf =
   struct
     type cmd =
@@ -82,7 +81,7 @@ tests an `int ref` against a model consisting of a single `int`:
       | Deref [@@deriving show { with_path = false }]
     type state = int
     type sut = int ref
-  
+
     let arb_cmd _ =
       let int_gen = Gen.oneof [Gen.int; Gen.nat] in
       QCheck.make ~print:show_cmd
@@ -90,23 +89,23 @@ tests an `int ref` against a model consisting of a single `int`:
                     Gen.return Decr;
                     Gen.map (fun i -> Set i) int_gen;
                     Gen.return Deref])
-  
+
     let init_state  = 0
     let init_sut () = ref 0
     let cleanup _   = ()
-  
+
     let next_state c s = match c with
       | Incr  -> s+1
       | Decr  -> s-1
       | Set i -> if i<>1213 then i else s (* an artificial fault *)
       | Deref -> s
-  
+
     let run_cmd c s r = match c with
       | Incr  -> (incr r; true)
       | Decr  -> (decr r; true)
       | Set i -> (r := i; true)
       | Deref -> !r = s
-        
+
     let precond _ _ = true
   end
   module CT = QCSTM.Make(CConf)
@@ -133,24 +132,22 @@ or may not catch the model's bug in a given run:
 
 
 ```
-  $ make counter
-  ocamlbuild -use-ocamlfind -package qcheck,qCSTM,ppx_deriving.show examples/counter.cma examples/counter.native
-  Finished, 8 targets (3 cached) in 00:00:00.
-  $ ./counter.native 
+  $ dune build @all
+  $ dune exec -- ./examples/counter.exe
   random seed: 272260055
   generated error  fail  pass / total     time test name
   [✓] 10000     0     0 10000 / 10000     1.0s ref-model agreement
   ================================================================================
   success (ran 1 tests)
-  $ ./counter.native 
+  $ dune exec -- ./examples/counter.exe
   random seed: 36511368
   generated error  fail  pass / total     time test name
   [✗]  2032     0     1  2031 / 10000     1.2s ref-model agreement
-  
+
   --- Failure --------------------------------------------------------------------
-  
+
   Test ref-model agreement failed (14 shrink steps):
-  
+
   [(Set 1213); Deref]
   ================================================================================
   failure (1 tests failed, 0 tests errored, ran 1 tests)

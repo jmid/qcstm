@@ -33,9 +33,9 @@ struct
     | Decr  -> (decr r; true)
     | Set i -> (r := i; true)
     | Deref -> !r = s
-      
+
   let precond _ _ = true
 end
-module CT = QCSTM.Make(CConf)
-;;
-QCheck_runner.run_tests ~verbose:true [CT.agree_test ~count:10_000 ~name:"ref-model agreement"]
+let _ =
+  let module CT = QCSTM.Make(CConf) in
+  exit @@ QCheck_runner.run_tests ~verbose:true [CT.agree_test ~count:10_000 ~name:"ref-model agreement"]

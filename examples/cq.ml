@@ -1,6 +1,5 @@
 open QCheck
 open Ctypes
-open PosixTypes
 open Foreign
 
 type queue = unit ptr
@@ -41,7 +40,7 @@ struct
       | Get
       | Size -> Iter.empty in
     QCheck.make ~print:show_cmd ~shrink:shrink (gen_cmd s)
-      
+
   let init_state = Undef
   let next_state c s = match c with
     | New n -> Def { size = n; contents = [] }
@@ -54,7 +53,7 @@ struct
     | Size  -> s
 
   let init_sut () = ref None
-  let cleanup _ = ()                
+  let cleanup _ = ()
   let run_cmd c s q = match c with
     | New n -> q := Some (alloc n); true
     | Put n -> (match !q with
@@ -73,7 +72,7 @@ struct
                     | Undef -> ignore (size q); false
                     | Def s -> List.length s.contents = size q)
                  | None   -> failwith "no queue to size")
-      
+
   let precond c s = match c with
     | New n -> s = Undef && n > 0
     | Put _ -> (match s with
@@ -85,8 +84,8 @@ struct
     | Size  -> s <> Undef
 end
 
-module CqT = QCSTM.Make(CqConf)
-;;
-QCheck_runner.run_tests ~verbose:true
-  [CqT.consistency_test ~count:2000 ~name:"circular-queue consistency";
-   CqT.agree_test ~count:10_000 ~name:"circular-queue-model agreement"]
+let _ =
+  let module CqT = QCSTM.Make(CqConf) in
+  exit @@ QCheck_runner.run_tests ~verbose:true
+    [CqT.consistency_test ~count:2000 ~name:"circular-queue consistency";
+     CqT.agree_test ~count:10_000 ~name:"circular-queue-model agreement"]

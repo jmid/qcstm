@@ -56,11 +56,11 @@ struct
   let init_sut _ = ()
   let cleanup _ = ()
 
-  let run_cmd c s sut = (* "we never hit a state with first two pegs empty" *)
+  let run_cmd c s _sut = (* "we never hit a state with first two pegs empty" *)
     let next = next_state c s in
     not (next.peg1 = [] && next.peg2 = [])
 end
 
-module HT = QCSTM.Make(HanoiConf)
-;;
-QCheck_runner.run_tests ~verbose:true [HT.agree_test ~count:100 ~name:"towers of Hanoi"]
+let _ =
+  let module HT = QCSTM.Make(HanoiConf) in
+  exit @@ QCheck_runner.run_tests ~verbose:true [HT.agree_test ~count:100 ~name:"towers of Hanoi"]
