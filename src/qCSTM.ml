@@ -1,22 +1,27 @@
 (** A simple state machine framework based on QCheck *)
 open QCheck
 
-    
+
 (** {1 A state machine framework for property-based testing of imperative code} *)
 
 (** This library implements a simple, typed state machine framework
     for property-based testing of imperative code.
 
-    It takes inspiration from the commercial Erlang state machine framework from Quviq 
+    It takes inspiration from the commercial Erlang state machine framework from Quviq
     and ScalaCheck's state machine framework.
 *)
 
 (** The specification of a state machine. *)
 module type StmSpec =
 sig
-  type cmd   (** The type of commands *)
-  type state (** The type of the model's state    *)
-  type sut   (** The type of the system under test *)
+  type cmd
+  (** The type of commands *)
+
+  type state
+  (** The type of the model's state    *)
+
+  type sut
+  (** The type of the system under test *)
 
   val arb_cmd : state -> cmd arbitrary
   (** A command generator. Accepts a state parameter to enable state-dependent [cmd] generation. *)
@@ -32,7 +37,7 @@ sig
   (** The initial state of the system under test. *)
 
   val cleanup : sut -> unit
-  (** Utility function to clean up the [sut] after each test instance, 
+  (** Utility function to clean up the [sut] after each test instance,
       e.g., for closing sockets, files, or resetting global parameters*)
 
   val run_cmd : cmd -> state -> sut -> bool
@@ -45,7 +50,7 @@ sig
   (** [precond c s] expresses preconditions for command [c].
       This is useful, e.g., to prevent the shrinker from breaking invariants when minimizing
       counterexamples. *)
-end  
+end
 
 
 (** Derives a test framework from a state machine specification. *)
@@ -69,9 +74,9 @@ struct
   	  (Spec.arb_cmd s).gen >>= fun c ->
 	   (gen_cmds (Spec.next_state c s) (fuel-1)) >>= fun cs ->
              return (c::cs))
-  (** A fueled command list generator. 
+  (** A fueled command list generator.
       Accepts a state parameter to enable state-dependent [cmd] generation. *)
-     
+
   let rec cmds_ok s cs = match cs with
     | [] -> true
     | c::cs ->
@@ -80,7 +85,7 @@ struct
 	cmds_ok s' cs
   (** A precondition checker (stops early, thanks to short-circuit Boolean evaluation).
       Accepts the initial state and the command sequence as parameters.  *)
-  
+
   let arb_cmds s =
     let cmds_gen = Gen.sized (gen_cmds s) in
     let shrinker = match (Spec.arb_cmd s).shrink with
@@ -95,7 +100,7 @@ struct
   let consistency_test ?(count=1000) ~name =
     Test.make ~name:name ~count:count (arb_cmds Spec.init_state) (cmds_ok Spec.init_state)
   (** A consistency test that generates a number of [cmd] sequences and
-      checks that all contained [cmd]s satisfy the precondition [precond]. 
+      checks that all contained [cmd]s satisfy the precondition [precond].
       Accepts an optional [count] parameter and a test name as a labeled parameter [name]. *)
 
   let rec interp_agree s sut cs = match cs with
@@ -117,7 +122,7 @@ struct
   (** The agreement property: the command sequence [cs] yields the same observations
       when interpreted from the model's initial state and the [sut]'s initial state.
       Cleans up after itself by calling [Spec.cleanup] *)
-      
+
   let agree_test ?(count=1000) ~name =
     Test.make ~name:name ~count:count (arb_cmds Spec.init_state) agree_prop
   (** An actual agreement test (for convenience). Accepts an optional count parameter
