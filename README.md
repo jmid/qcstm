@@ -84,7 +84,7 @@ tests an `int ref` against a model consisting of a single `int`:
     type sut = int ref
   
     let arb_cmd _ =
-      let int_gen = Gen.oneof [Gen.int; Gen.small_int] in
+      let int_gen = Gen.oneof [Gen.int; Gen.nat] in
       QCheck.make ~print:show_cmd
         (Gen.oneof [Gen.return Incr;
                     Gen.return Decr;

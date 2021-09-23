@@ -9,7 +9,7 @@ struct
   type sut = Dl.library * (int -> unit) * (unit -> int)
 
   let arb_cmd s =
-    let int_gen = Gen.oneof [Gen.map Int32.to_int int32.gen; Gen.small_int] in
+    let int_gen = Gen.oneof [Gen.map Int32.to_int int32.gen; Gen.nat] in
     let shrink c = match c with
       | Put i -> Iter.map (fun i' -> Put i') (Shrink.int i)
       | Get   -> Iter.empty in

@@ -12,7 +12,7 @@ struct
   type sut = int Queue.t
 
   let gen_cmd s =
-    let int_gen = Gen.oneof [Gen.int; Gen.small_int] in
+    let int_gen = Gen.oneof [Gen.int; Gen.nat] in
     if s = []
     then Gen.oneof  (* don't generate pop/tops from empty *)
            [Gen.map (fun i -> Push i) int_gen;

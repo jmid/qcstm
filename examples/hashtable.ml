@@ -17,7 +17,7 @@ struct
 
   (*  gen_cmd : state -> command Gen.t  *)
   let gen_cmd s =
-    let int_gen = Gen.small_int in
+    let int_gen = Gen.nat in
     let str_gen =
       if s=[]
       then Gen.oneof [Gen.small_string;
