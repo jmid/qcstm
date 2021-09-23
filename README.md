@@ -1,7 +1,7 @@
 QCSTM: A Simple State-Machine Framework for OCaml Based on QCheck 
 =================================================================
 
-[![Build Status](https://travis-ci.com/jmid/qcstm.svg?branch=master)](https://travis-ci.com/jmid/qcstm)
+[![Build Status](https://api.travis-ci.com/jmid/qcstm.svg?branch=master)](https://app.travis-ci.com/github/jmid/qcstm)
 
 This library implements a simple, typed state machine framework for
 property-based testing of imperative code. Tests are described by (a
