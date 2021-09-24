@@ -91,9 +91,10 @@ struct
     | Mem k         -> List.mem_assoc k s = Hashtbl.mem h k
     | Length        -> List.length s = Hashtbl.length h
 
-  let precond c s = true
+  let precond _c _s = true
 end
-module HT = QCSTM.Make(HConf)
-;;
-QCheck_runner.run_tests ~verbose:true
-  [HT.agree_test ~count:10_000 ~name:"Hashtbl-model agreement"]
+
+let _ =
+  let module HT = QCSTM.Make(HConf) in
+  exit @@ QCheck_runner.run_tests ~verbose:true
+    [HT.agree_test ~count:10_000 ~name:"Hashtbl-model agreement"]

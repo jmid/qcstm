@@ -50,7 +50,7 @@ struct
     | Is_empty
     | Length
     | Fold (_,_) -> s
-  
+
   let init_sut   = Stack.create
   let cleanup _  = ()
   let run_cmd c s st = match c with
@@ -74,8 +74,8 @@ struct
     | Fold (_,_) -> true
 end
 
-module StT = QCSTM.Make(StConf)
-;;
-QCheck_runner.run_tests ~verbose:true
-  [StT.consistency_test ~count:1000 ~name:"stack-consistency";
-   StT.agree_test ~count:10_000 ~name:"stack-model"]
+let _ =
+  let module StT = QCSTM.Make(StConf) in
+  exit @@ QCheck_runner.run_tests ~verbose:true
+    [StT.consistency_test ~count:1000 ~name:"stack-consistency";
+     StT.agree_test ~count:10_000 ~name:"stack-model"]

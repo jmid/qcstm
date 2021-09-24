@@ -1,0 +1,54 @@
+;; Negative tests with counterexamples
+(executables
+ (libraries qcheck qcstm ppx_deriving)
+ (package qcstm)
+ (public_names hanoi waterjug q counter)
+ (names hanoi waterjug q counter)
+ (modules hanoi waterjug q counter)
+ (preprocess (pps ppx_deriving.show)))
+
+;; Positive tests
+(tests
+ (libraries qcheck qcstm ppx_deriving)
+ (package qcstm)
+ (names stk hashtable buf)
+ (modules stk hashtable buf)
+ (preprocess (pps ppx_deriving.show)))
+
+;; Native C tests
+(executables
+ (libraries qcheck qcstm ppx_deriving ctypes ctypes.foreign)
+ (package qcstm)
+ (public_names stdio cq)
+ (names stdio cq)
+ (modules stdio cq)
+ (foreign_stubs (language c) (names stdiostub cqstub))
+ (preprocess (pps ppx_deriving.show)))
+
+;; Native C test that loads a shared library
+;; NOTE the hardcoded path in putget.ml can be different depending on how this
+;;      executable is run.
+(executable
+ (libraries qcheck qcstm ppx_deriving ctypes ctypes.foreign)
+ (package qcstm)
+ (public_name putget)
+ (name putget)
+ (modules putget)
+ (foreign_archives putgetstub)
+ (preprocess (pps ppx_deriving.show)))
+
+;; Produce both a statically linked and dynamically linked library for this
+;; C code.
+(foreign_library
+ (archive_name putgetstub)
+ (language c)
+ (names putgetstub))
+
+;; Run Native C tests as part of `dune runtest`
+(rule
+ (alias  runtest)
+ (action (run ./stdio.exe)))
+
+(rule
+ (alias  runtest)
+ (action (run ./cq.exe)))

@@ -1,0 +1,5 @@
+(library
+ (name qcstm)
+ (public_name qcstm)
+  (wrapped false)
+ (libraries qcheck))

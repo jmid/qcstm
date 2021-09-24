@@ -45,7 +45,7 @@ struct
     | Top      -> s
     | Is_empty -> s
 
-  
+
   let init_sut   = Queue.create
   let cleanup _  = ()
   let run_cmd c s q = match c with
@@ -61,6 +61,6 @@ struct
     | _   -> true
 end
 
-module QT = QCSTM.Make(QConf)
-;;
-QCheck_runner.run_tests ~verbose:true [QT.agree_test ~count:10_000 ~name:"queue-model agreement"]
+let _ =
+  let module QT = QCSTM.Make(QConf) in
+  exit @@ QCheck_runner.run_tests ~verbose:true [QT.agree_test ~count:10_000 ~name:"queue-model agreement"]
